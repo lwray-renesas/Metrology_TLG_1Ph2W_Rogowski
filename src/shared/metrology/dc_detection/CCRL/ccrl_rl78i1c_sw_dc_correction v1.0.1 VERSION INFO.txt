@@ -1,0 +1,23 @@
+#define 	DC_IMMUNITY_LIB_VER        		"1.0.1"
+#define 	DC_IMMUNITY_LIB_BUILD_DATE 		"06.29.2022 (mm.dd.yyyy)"
+#define 	DC_IMMUNITY_LIB_TARGET_PLATFORM		"None"
+#define 	DC_IMMUNITY_LIB_BUILD_BY_COMPILER	"CCRL 1.11.00"
+#define 	DC_IMMUNITY_LIB_SUMMARY			"5 channels, detection and correction APIs, resolve DC detection flag toggle OFF when change phase shift control register, support CCRL mirror ROM and -far_rom"
+
+Mirror ROM constants
+
+/* Global version information */
+const uint8_t __near g_dc_immunity_lib_ver[]        		= DC_IMMUNITY_LIB_VER;
+const uint8_t __near g_dc_immunity_lib_build_date[] 		= DC_IMMUNITY_LIB_BUILD_DATE;
+const uint8_t __near g_dc_immunity_lib_target_platform[]	= DC_IMMUNITY_LIB_TARGET_PLATFORM;
+const uint8_t __near g_dc_immunity_lib_build_by_compiler[]	= DC_IMMUNITY_LIB_BUILD_BY_COMPILER;
+const uint8_t __near g_dc_immunity_lib_summary[]                = DC_IMMUNITY_LIB_SUMMARY;
+
+Far ROM constants
+
+/* Global version information */
+const uint8_t __far g_dc_immunity_lib_ver_f[]        		= DC_IMMUNITY_LIB_VER;
+const uint8_t __far g_dc_immunity_lib_build_date_f[] 		= DC_IMMUNITY_LIB_BUILD_DATE;
+const uint8_t __far g_dc_immunity_lib_target_platform_f[]	= DC_IMMUNITY_LIB_TARGET_PLATFORM;
+const uint8_t __far g_dc_immunity_lib_build_by_compiler_f[]	= DC_IMMUNITY_LIB_BUILD_BY_COMPILER;
+const uint8_t __far g_dc_immunity_lib_summary_f[]           	= DC_IMMUNITY_LIB_SUMMARY;

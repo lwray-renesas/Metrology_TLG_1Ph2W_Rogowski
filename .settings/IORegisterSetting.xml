@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<Configs>
+    <History>
+        <Keyword>RESF</Keyword>
+        <Keyword>SCSC</Keyword>
+        <Keyword>VRTCEN</Keyword>
+        <Keyword>RCR2</Keyword>
+        <Keyword>RCR5</Keyword>
+        <Keyword>RCR1</Keyword>
+        <Keyword>RTCPORSR</Keyword>
+        <Keyword>_00_RTC_POWERON_RESET_OCCUR</Keyword>
+        <Keyword>LVDVRTCF</Keyword>
+        <Keyword>BUPCTL0</Keyword>
+    </History>
+</Configs>
