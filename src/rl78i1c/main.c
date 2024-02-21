@@ -102,9 +102,7 @@ void main(void)
 
     	CONFIG_PollingProcessing();
 
-#if 0
     	EVENT_PollingProcessing();
-#endif
 
         R_WDT_Restart();
     }
