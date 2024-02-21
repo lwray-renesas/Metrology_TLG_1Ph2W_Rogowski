@@ -26,8 +26,8 @@ Macro definitions
 
 /* I/Fs mapping */
 #define WRP_IIC_DRIVER_Init()                           {;}                                             /* IIC Initialization */
-#define WRP_IIC_DRIVER_SendStart(addr, buf, size)       R_IICA0_Master_Send(addr, buf, size, 1)         /* IIC Send */
-#define WRP_IIC_DRIVER_ReceiveStart(addr, buf, size)    R_IICA0_Master_Receive(addr, buf, size, 1)      /* IIC Recieve */
+#define WRP_IIC_DRIVER_SendStart(addr, buf, size)       R_IICA0_Master_Send(addr, buf, size, 100)         /* IIC Send */
+#define WRP_IIC_DRIVER_ReceiveStart(addr, buf, size)    R_IICA0_Master_Receive(addr, buf, size, 100)      /* IIC Recieve */
 
 /******************************************************************************
 Variable Externs
