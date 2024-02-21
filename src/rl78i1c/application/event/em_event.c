@@ -122,7 +122,12 @@ void EVENT_PollingProcessing(void)
 		}
 
 		/* Update the current status*/
-		current_status = new_status;
+		current_status.is_voltage_sag = new_status.is_voltage_sag;
+		current_status.is_voltage_swell = new_status.is_voltage_swell;
+		current_status.noload_active = new_status.noload_active;
+		current_status.noload_active2 = new_status.noload_active2;
+		current_status.noload_reactive = new_status.noload_reactive;
+		current_status.noload_reactive2 = new_status.noload_reactive2;
 	}
 }
 /* END OF FUNCTION*/
