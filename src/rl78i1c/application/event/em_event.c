@@ -106,7 +106,7 @@ void EVENT_PollingProcessing(void)
 			DEBUG_Printf((uint8_t*)"\n\rNo Reactive Load Event (Neutral)!");
 			ack_new_line_flag = 1U;
 		}
-		else if((0U == new_status.noload_reactive2) && (1U == current_status.noload_reactive))
+		else if((0U == new_status.noload_reactive2) && (1U == current_status.noload_reactive2))
 		{
 			DEBUG_Printf((uint8_t*)"\n\rNo Reactive Load Recovered (Neutral)!");
 			ack_new_line_flag = 1U;
