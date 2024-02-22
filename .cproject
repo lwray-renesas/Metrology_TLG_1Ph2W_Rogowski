@@ -90,6 +90,7 @@
 								<option id="com.renesas.cdt.managedbuild.renesas.ccrl.compiler.option.characterSet.1340406473" name="Character encoding (-character_set)" superClass="com.renesas.cdt.managedbuild.renesas.ccrl.compiler.option.characterSet" useByScannerDiscovery="false" value="com.renesas.cdt.managedbuild.renesas.ccrl.compiler.option.characterSet.utf8" valueType="enumerated"/>
 								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="com.renesas.cdt.managedbuild.renesas.ccrl.compiler.option.D.1231737143" name="Macro definition (-D)" superClass="com.renesas.cdt.managedbuild.renesas.ccrl.compiler.option.D" useByScannerDiscovery="false" valueType="definedSymbols">
 									<listOptionValue builtIn="false" value="FEATURES_BQUR"/>
+									<listOptionValue builtIn="false" value="METER_ENABLE_MEASURE_CPU_LOAD"/>
 									<listOptionValue builtIn="false" value="ROGOWSKI"/>
 									<listOptionValue builtIn="false" value="__DEBUG"/>
 								</option>

@@ -2189,8 +2189,6 @@ static uint8_t COMMAND_InvokeDumpSample(uint8_t *arg_str)
 	uint16_t i;
 	uint8_t buffer[20];
 
-#ifndef METER_ENABLE_MEASURE_CPU_LOAD
-
 	CMD_SendString((uint8_t *)"\n\rParameter(s): ");
 	CMD_SendString((uint8_t *)arg_str);
 	CMD_SendString((uint8_t *)"\n\r");
@@ -2236,10 +2234,6 @@ static uint8_t COMMAND_InvokeDumpSample(uint8_t *arg_str)
 		CMD_Printf((uint8_t *)"%ld, %ld\n\r", g_sample0[i], g_sample1[i]);
 	}
 
-#else
-	CMD_Printf((uint8_t *)"\n\r No support, please turn off the macro METER_ENABLE_MEASURE_CPU_LOAD! \n\r");
-#endif
-
 	return 0;
 }
 
@@ -2255,8 +2249,6 @@ static uint8_t COMMAND_InvokeCdumpSample(uint8_t *arg_str)
 {
 	uint16_t i;
 	uint8_t buffer[20];
-
-#ifndef METER_ENABLE_MEASURE_CPU_LOAD
 
 	CMD_SendString((uint8_t *)"\n\rParameter(s): ");
 	CMD_SendString((uint8_t *)arg_str);
@@ -2303,10 +2295,6 @@ static uint8_t COMMAND_InvokeCdumpSample(uint8_t *arg_str)
 	}
 
 	CMD_Printf((uint8_t *)"%ld", g_sample1[i]);
-
-#else
-	CMD_Printf((uint8_t *)"\n\r No support, please turn off the macro METER_ENABLE_MEASURE_CPU_LOAD! \n\r");
-#endif
 
 	return 0;
 }

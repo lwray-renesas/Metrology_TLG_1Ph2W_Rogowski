@@ -452,7 +452,6 @@ Private global variables and functions
 
 			/* Debug the signal */
 #ifdef __DEBUG
-#ifndef METER_ENABLE_MEASURE_CPU_LOAD
 			if (g_sample_count < EM_MAX_SAMPLE_BUFFER)
 			{
 				g_sample0[g_sample_count] = g_wrp_adc_samples.v;
@@ -466,7 +465,6 @@ Private global variables and functions
 				}
 				g_sample_count++;
 			}
-#endif /* METER_ENABLE_MEASURE_CPU_LOAD */
 #endif /* __DEBUG */
 
 			{

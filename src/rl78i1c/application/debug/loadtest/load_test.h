@@ -2,6 +2,7 @@
 #define __LOAD_TEST_H
 
 #include "r_cg_cgc.h"
+#include "r_cg_tau.h"
 
 #ifdef METER_ENABLE_MEASURE_CPU_LOAD
 /* Import from  r_cg_adc_user.c for measuring DSAD functions */
@@ -35,8 +36,8 @@ void LOADTEST_TAU_DeInit(void);
 uint16_t LOADTEST_CGC_GetClock(void);
 
 
-#define LOADTEST_TAU_Start()            (TS0 = 0x01)
-#define LOADTEST_TAU_Stop()             (TT0 = 0x01)
+#define LOADTEST_TAU_Start()            {R_TAU0_Channel0_Start();}
+#define LOADTEST_TAU_Stop()             {R_TAU0_Channel0_Stop();}
 #define LOADTEST_TAU_Diff()             (0xFFFF - TCR00)
 
 #endif

@@ -42,6 +42,23 @@ Pragma directive
 #pragma interrupt r_dsadc_interrupt(vect=INTDSAD)
 
 /* Start user code for pragma. Do not edit comment generated here */
+
+#ifdef METER_ENABLE_MEASURE_CPU_LOAD
+#include "load_test.h"
+#define DSAD_MEASUREMENT_TIME   (65535)
+uint16_t g_timer0_dsad_counter = 0;
+
+uint16_t g_timer0_dsad_maxcounter = 0;
+uint16_t g_timer0_dsad_mincounter = 0;
+
+uint16_t g_dsad_count = DSAD_MEASUREMENT_TIME;
+const uint16_t g_dsad_max_count = DSAD_MEASUREMENT_TIME;
+
+uint32_t g_timer0_dsad_sum_counter = 0;
+
+uint16_t g_timer0_diff = 0;
+#endif
+
 extern void EM_ADC_InterruptCallback(void);
 /* End user code. Do not edit comment generated here */
 
@@ -60,7 +77,40 @@ Global variables and functions
 static void __near r_dsadc_interrupt(void)
 {
     /* Start user code. Do not edit comment generated here */
+#ifdef METER_ENABLE_MEASURE_CPU_LOAD
+    if (g_dsad_count < g_dsad_max_count)
+    {
+        g_dsad_count++;
+        LOADTEST_TAU_Start();
+    }
+#endif
+
     EM_ADC_InterruptCallback();
+
+#ifdef METER_ENABLE_MEASURE_CPU_LOAD
+g_timer0_diff = LOADTEST_TAU_Diff();
+
+LOADTEST_TAU_Stop();
+
+g_timer0_dsad_sum_counter += g_timer0_diff;
+
+if (g_dsad_count <=  g_dsad_max_count)
+{
+    g_timer0_dsad_counter = g_timer0_diff;
+
+    if ( g_timer0_dsad_counter > g_timer0_dsad_maxcounter)
+    {
+        g_timer0_dsad_maxcounter = g_timer0_dsad_counter;
+    }
+
+    if ( g_timer0_dsad_counter < g_timer0_dsad_mincounter)
+    {
+        g_timer0_dsad_mincounter = g_timer0_dsad_counter;
+    }
+}
+
+#endif
+
     /* End user code. Do not edit comment generated here */
 }
 

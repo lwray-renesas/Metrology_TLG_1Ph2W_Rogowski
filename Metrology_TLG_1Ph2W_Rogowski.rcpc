@@ -48,6 +48,8 @@
               <Path>src\rl78i1c\application\inst_read\inst_read.c</Path>
               <Path>src\rl78i1c\application\inst_read\inst_read.h</Path>
             </Category>
+              <Path>src\rl78i1c\application\mlp\float32_to_q7_24.asm</Path>
+              <Path>src\rl78i1c\application\mlp\q7_24_to_float32.asm</Path>
             <Category Name="startup">
               <Path>src\rl78i1c\application\startup\platform.c</Path>
               <Path>src\rl78i1c\application\startup\platform.h</Path>
@@ -393,6 +395,7 @@
           <IncludePathForC>"${ProjDirPath}\..\..\..\..\..\..\..\..\..\Dev\Temporary\SCRATCH\${ProjName}\src\rl78i1c\libwrapper"</IncludePathForC>
           <IncludePathForC>"${ProjDirPath}\..\..\..\..\..\..\..\..\..\Dev\Temporary\SCRATCH\${ProjName}\src\shared\metrology"</IncludePathForC>
           <MacroForC>FEATURES_BQUR</MacroForC>
+          <MacroForC>METER_ENABLE_MEASURE_CPU_LOAD</MacroForC>
           <MacroForC>ROGOWSKI</MacroForC>
           <MacroForC>__DEBUG</MacroForC>
         </CommonOptions>

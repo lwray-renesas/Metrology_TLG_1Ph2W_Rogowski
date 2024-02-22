@@ -58,22 +58,9 @@ Global variables and functions
 ***********************************************************************************************************************/
 void LOADTEST_TAU_Init(void)
 {
-    TAU0EN = 1U;    /* supplies input clock */
-    TPS0 = _0000_TAU_CKM0_fCLK_0 | _0040_TAU_CKM1_fCLK_4 | _0000_TAU_CKM2_fCLK_1 | _0000_TAU_CKM3_fCLK_8;
-    /* Mask channel 0 interrupt */
-    TMMK00 = 1U;    /* disable INTTM00 interrupt */
-    TMIF00 = 0U;    /* clear INTTM00 interrupt flag */  
-    
-    /* Set INTTM00 low priority */
-    TMPR100 = 1U;
-    TMPR000 = 1U;
-    
-    /* Channel 0 used as interval timer */
-    TMR00 = _0000_TAU_CLOCK_SELECT_CKM0 | _0000_TAU_CLOCK_MODE_CKS | _0000_TAU_COMBINATION_SLAVE | 
-            _0000_TAU_TRIGGER_SOFTWARE | _0000_TAU_MODE_INTERVAL_TIMER | _0000_TAU_START_INT_UNUSED;
-    TDR00 = 0xFFFF;
-    TO0 &= ~_0001_TAU_CH0_OUTPUT_VALUE_1;
-    TOE0 &= ~_0001_TAU_CH0_OUTPUT_ENABLE;
+	/* Initialised at start up - assumes TAU supplied with operating click undivided -
+	 * not output and operating in interval mode with interrupts masked.*/
+	TDR00 = 0xFFFFU;
 }
 
 /***********************************************************************************************************************
@@ -84,23 +71,7 @@ void LOADTEST_TAU_Init(void)
 ***********************************************************************************************************************/
 void LOADTEST_TAU_DeInit(void)
 {
-    /* Put here the original initialization of TAU00 */
-    TPS0 = _0000_TAU_CKM0_fCLK_0 | _0040_TAU_CKM1_fCLK_4 | _0000_TAU_CKM2_fCLK_1 | _0000_TAU_CKM3_fCLK_8;
-    
-    /* Mask channel 0 interrupt */
-    TMMK00 = 1U;    /* disable INTTM00 interrupt */
-    TMIF00 = 0U;    /* clear INTTM00 interrupt flag */
-
-    /* Set INTTM00 low priority */
-    TMPR100 = 1U;
-    TMPR000 = 1U;   
-    
-    /* Channel 0 used as interval timer */
-    TMR00 = _0000_TAU_CLOCK_SELECT_CKM0 | _0000_TAU_CLOCK_MODE_CKS | _0000_TAU_COMBINATION_SLAVE | 
-            _0000_TAU_TRIGGER_SOFTWARE | _0000_TAU_MODE_INTERVAL_TIMER | _0000_TAU_START_INT_UNUSED;
-    TDR00 = 0x5DBF;
-    TO0 &= ~_0001_TAU_CH0_OUTPUT_VALUE_1;
-    TOE0 &= ~_0001_TAU_CH0_OUTPUT_ENABLE;
+	/* Not necessary - start and stop function will work OK*/
 }
 
 
