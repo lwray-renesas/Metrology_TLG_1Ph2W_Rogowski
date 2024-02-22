@@ -201,6 +201,20 @@ uint8_t start_peripheral_and_app(void)
 	EM_CALIBRATION           calib;
 	st_em_setting_t          em_hold_setting_value;
 	volatile uint32_t clock_count = 0UL;
+	uint16_t cpu_speed = 24;
+
+	if(HOCODIV == 0x00)
+    {
+		cpu_speed = 24;
+    }
+    else if(HOCODIV == 0x01)
+    {
+    	cpu_speed = 12;
+    }
+    else
+    {
+    	cpu_speed = 6;
+    }
 
 	DEBUG_Printf((uint8_t *)"\n\r");
 	DEBUG_Printf((uint8_t *)line_break);
@@ -237,6 +251,9 @@ uint8_t start_peripheral_and_app(void)
 	_COM_strcpy_ff(version_buffer,(const char FAR_PTR *)VERSION_BLD_DATE_STR);
 	_COM_strcpy_ff(&version_buffer[_COM_strlen_f(VERSION_BLD_DATE_STR)],(const char FAR_PTR *)g_em_lib_build_date);
 	DEBUG_Printf((uint8_t *)param_text, version_buffer);
+
+	sprintf(code_buffer, "CPU Speed: %u MHz", cpu_speed);
+	DEBUG_Printf((uint8_t *)param_text, code_buffer);
 
 	DEBUG_Printf((uint8_t *)param_text, " ");
 	DEBUG_Printf((uint8_t *)param_item_start, 1, "Checking Crystal Operation");

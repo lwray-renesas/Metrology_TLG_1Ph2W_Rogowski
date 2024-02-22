@@ -2504,6 +2504,20 @@ static uint8_t COMMAND_InvokeCPULoad(uint8_t *arg_str)
 	float min_dsad_time     = 0.0f;
 	float avg_dsad_time     = 0.0f;
 	EM_CALIBRATION calib    = EM_GetCalibInfo();
+	uint16_t cpu_speed = 24;
+
+	if(HOCODIV == 0x00)
+    {
+		cpu_speed = 24;
+    }
+    else if(HOCODIV == 0x01)
+    {
+    	cpu_speed = 12;
+    }
+    else
+    {
+    	cpu_speed = 6;
+    }
 
 	LOADTEST_TAU_Init();
 
@@ -2515,6 +2529,7 @@ static uint8_t COMMAND_InvokeCPULoad(uint8_t *arg_str)
 
 	CMD_Printf((uint8_t *)"\n\r");
 	CMD_Printf((uint8_t *)"\n\rStarted measuring DSAD functions performance");
+	CMD_Printf((uint8_t *)"\n\rCPU Speed: %u MHz", cpu_speed);
 	CMD_Printf((uint8_t *)"\n\rPlease wait for about %0.3f seconds while system measuring",(float)g_dsad_max_count * 0.000256f);
 	while(g_dsad_count < g_dsad_max_count)
 	{
