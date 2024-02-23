@@ -23,7 +23,7 @@
 * Device(s)    : R5F10NLG
 * Tool-Chain   : CCRL
 * Description  : This file implements device driver for LVD module.
-* Creation Date: 18/10/2023
+* Creation Date: 23/02/2024
 ***********************************************************************************************************************/
 #ifndef LVD_H
 #define LVD_H
@@ -106,12 +106,22 @@ Global functions
 void R_LVD_Create(void);
 void R_LVD_Start_VDD(void);
 void R_LVD_Stop_VDD(void);
-void R_LVD_Start_VBAT(void);
-void R_LVD_Stop_VBAT(void);
-void R_LVD_Start_VRTC(void);
-void R_LVD_Stop_VRTC(void);
-void R_LVD_Start_EXLVD(void);
-void R_LVD_Stop_EXLVD(void);
 /* Start user code for function. Do not edit comment generated here */
+
+typedef enum
+{
+	vdd_less_than_2_46 = 0,
+	vdd_2_46_to_2_67,
+	vdd_2_67_to_2_87,
+	vdd_2_87_to_3_08,
+	vdd_3_08_to_3_39,
+	vdd_3_39_to_3_70,
+	vdd_more_than_3_77,
+}vdd_range_t;
+
+vdd_range_t R_LVD_Check(void);
+
+char const * R_LVD_range_to_str(const vdd_range_t range);
+
 /* End user code. Do not edit comment generated here */
 #endif

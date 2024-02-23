@@ -41,9 +41,9 @@ Typedef definitions
 /***********************************************************************************************************************
 Macro definitions
 ***********************************************************************************************************************/
-#define     CMD_USING_LAST_CMD              1       /* 1: USE, 0: UN-USE */
+#define     CMD_USING_LAST_CMD              0       /* 1: USE, 0: UN-USE */
 #define     CMD_USING_BUILT_IN_CMD          1       /* 1: USE, 0: UN-USE */
-#define     CMD_USING_SUGGESTION            1       /* 1: USE, 0: UN-USE */
+#define     CMD_USING_SUGGESTION            0       /* 1: USE, 0: UN-USE */
 #define     CMD_USING_HINT_WHEN_TYPING      0       /* 1: USE, 0: UN-USE */
 
 /***********************************************************************************************************************

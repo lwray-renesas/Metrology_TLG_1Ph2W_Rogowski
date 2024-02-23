@@ -23,7 +23,7 @@
 * Device(s)    : R5F10NLG
 * Tool-Chain   : CCRL
 * Description  : This file implements device driver for LVD module.
-* Creation Date: 18/10/2023
+* Creation Date: 23/02/2024
 ***********************************************************************************************************************/
 
 /***********************************************************************************************************************
@@ -32,6 +32,7 @@ Includes
 #include "r_cg_macrodriver.h"
 #include "r_cg_lvd.h"
 /* Start user code for include. Do not edit comment generated here */
+#include "wrp_app_mcu.h"
 /* End user code. Do not edit comment generated here */
 #include "r_cg_userdefine.h"
 
@@ -39,16 +40,12 @@ Includes
 Pragma directive
 ***********************************************************************************************************************/
 #pragma interrupt r_lvd_vddinterrupt(vect=INTLVDVDD)
-#pragma interrupt r_lvd_vbatinterrupt(vect=INTLVDVBAT)
-#pragma interrupt r_lvd_vrtcinterrupt(vect=INTLVDVRTC)
-#pragma interrupt r_lvd_exlvdinterrupt(vect=INTLVDEXLVD)
 /* Start user code for pragma. Do not edit comment generated here */
 /* End user code. Do not edit comment generated here */
 
 /***********************************************************************************************************************
 Global variables and functions
 ***********************************************************************************************************************/
-volatile uint8_t g_lvd_vrtc_ready_flag;    /* VRTC pin voltage ready flag */
 /* Start user code for global. Do not edit comment generated here */
 /* End user code. Do not edit comment generated here */
 
@@ -65,45 +62,118 @@ static void __near r_lvd_vddinterrupt(void)
     /* End user code. Do not edit comment generated here */
 }
 
-/***********************************************************************************************************************
-* Function Name: r_lvd_vbatinterrupt
-* Description  : None
-* Arguments    : None
-* Return Value : None
-***********************************************************************************************************************/
-static void __near r_lvd_vbatinterrupt(void)
-{
-    /* Start user code. Do not edit comment generated here */
-    /* End user code. Do not edit comment generated here */
-}
 
-/***********************************************************************************************************************
-* Function Name: r_lvd_vrtcinterrupt
-* Description  : None
-* Arguments    : None
-* Return Value : None
-***********************************************************************************************************************/
-static void __near r_lvd_vrtcinterrupt(void)
-{
-    if (0U == LVDVRTCF)
-    {
-        g_lvd_vrtc_ready_flag = 1U;
-    }
-    /* Start user code. Do not edit comment generated here */
-    /* End user code. Do not edit comment generated here */
-}
 
-/***********************************************************************************************************************
-* Function Name: r_lvd_exlvdinterrupt
-* Description  : None
-* Arguments    : None
-* Return Value : None
-***********************************************************************************************************************/
-static void __near r_lvd_exlvdinterrupt(void)
-{
-    /* Start user code. Do not edit comment generated here */
-    /* End user code. Do not edit comment generated here */
-}
 
 /* Start user code for adding. Do not edit comment generated here */
+
+vdd_range_t R_LVD_Check(void)
+{
+	vdd_range_t l_vdd_range = vdd_less_than_2_46;
+
+	LVDVDMK = 1U;
+	LVDVDDEN = 0U;
+
+	/* Check less than 2.46V*/
+	LVDVDD = (LVDVDD & 0xC0U) | 0x0U;
+	LVDVDDEN = 1U;
+    MCU_Delay(300);
+    LVDVDIF = 0U;
+
+    if(1U == LVDVDDF)
+    {
+    	LVDVDDEN = 0U;
+        LVDVDIF = 0U;
+    	return vdd_less_than_2_46;
+    }
+
+	/* Check less than 2.67V*/
+	LVDVDD = (LVDVDD & 0xC0U) | 0x1U;
+	LVDVDDEN = 1U;
+    MCU_Delay(300);
+    LVDVDIF = 0U;
+
+    if(1U == LVDVDDF)
+    {
+    	LVDVDDEN = 0U;
+        LVDVDIF = 0U;
+    	return vdd_2_46_to_2_67;
+    }
+
+	/* Check less than 2.87V*/
+	LVDVDD = (LVDVDD & 0xC0U) | 0x2U;
+	LVDVDDEN = 1U;
+    MCU_Delay(300);
+    LVDVDIF = 0U;
+
+    if(1U == LVDVDDF)
+    {
+    	LVDVDDEN = 0U;
+        LVDVDIF = 0U;
+    	return vdd_2_67_to_2_87;
+    }
+
+	/* Check less than 3.08V*/
+	LVDVDD = (LVDVDD & 0xC0U) | 0x3U;
+	LVDVDDEN = 1U;
+    MCU_Delay(300);
+    LVDVDIF = 0U;
+
+    if(1U == LVDVDDF)
+    {
+    	LVDVDDEN = 0U;
+        LVDVDIF = 0U;
+    	return vdd_2_87_to_3_08;
+    }
+
+	/* Check less than 3.39V*/
+	LVDVDD = (LVDVDD & 0xC0U) | 0x4U;
+	LVDVDDEN = 1U;
+    MCU_Delay(300);
+    LVDVDIF = 0U;
+
+    if(1U == LVDVDDF)
+    {
+    	LVDVDDEN = 0U;
+        LVDVDIF = 0U;
+    	return vdd_3_08_to_3_39;
+    }
+
+	/* Check less than 3.7V or more than 3.77*/
+	LVDVDD = (LVDVDD & 0xC0U) | 0x5U;
+	LVDVDDEN = 1U;
+    MCU_Delay(300);
+    LVDVDIF = 0U;
+
+    if(1U == LVDVDDF)
+    {
+    	LVDVDDEN = 0U;
+        LVDVDIF = 0U;
+    	return vdd_3_39_to_3_70;
+    }
+    else
+    {
+    	LVDVDDEN = 0U;
+        LVDVDIF = 0U;
+    	return vdd_more_than_3_77;
+    }
+}
+/* END OF FUNCTION*/
+
+char const * R_LVD_range_to_str(const vdd_range_t range)
+{
+	static const char * lvd_str_arr[] = {
+			"Vdd < 2.46V",
+			"2.46V < Vdd < 2.67V",
+			"2.67V < Vdd < 2.87V",
+			"2.87V < Vdd < 3.08V",
+			"3.08V < Vdd < 3.39V",
+			"3.39V < Vdd < 3.70V",
+			"3.77V < Vdd"
+	};
+
+	return lvd_str_arr[range];
+}
+/* END OF FUNCTION*/
+
 /* End user code. Do not edit comment generated here */

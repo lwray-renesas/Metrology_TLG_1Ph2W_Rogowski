@@ -268,7 +268,7 @@
           <Option>-auto_section_layout</Option>
           <Option>-security_id=0</Option>
           <Option>-debug_monitor=1FE00-1FFFF</Option>
-          <Option>-user_opt_byte=7E3BE0</Option>
+          <Option>-user_opt_byte=7EFFE0</Option>
           <Option>-ocdbg=84</Option>
           <Option>-self</Option>
           <Option>-output="${ProjName}.abs"</Option>
@@ -472,7 +472,7 @@
           <Option>-auto_section_layout</Option>
           <Option>-security_id=0</Option>
           <Option>-debug_monitor=1FE00-1FFFF</Option>
-          <Option>-user_opt_byte=7E3BE0</Option>
+          <Option>-user_opt_byte=7EFFE0</Option>
           <Option>-ocdbg=04</Option>
           <Option>-self</Option>
           <Option>-output="${ProjName}.abs"</Option>

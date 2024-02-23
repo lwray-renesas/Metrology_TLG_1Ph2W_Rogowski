@@ -37,6 +37,7 @@ Includes   <System Includes> , "Project Includes"
 #include "r_cg_rtc.h"           /* RTC Driver */
 #include "r_cg_dsadc.h"         /* DSADC Driver */
 #include "r_cg_tau.h"
+#include "r_cg_lvd.h"
 
 /* Wrapper/User */
 
@@ -82,6 +83,7 @@ Exported global variables and functions (to be accessed by other files)
  ***********************************************************************************************************************/
 uint8_t g_reset_flag;
 st_em_startup_diag_t g_em_startup_diag;
+extern volatile vdd_range_t vdd_range;
 
 /***********************************************************************************************************************
 Private global variables and functions
@@ -102,6 +104,7 @@ static const uint8_t param_subitem_info_start[] = "|     . %-21s ";
 static const uint8_t param_subitem_info_middle_rtc[] = "%02x/%02x/20%02x %02x:%02x:%02x %-7s ";
 static const uint8_t param_item_end_normal[] = "\x1b[32m[%12s]\x1b[0m |\n\r";
 static const uint8_t param_item_end_abnormal[] = "\x1b[31m[%12s]\x1b[0m |\n\r";
+static const uint8_t param_item_end_warning[] = "\x1b[38;2;255;165;0m[%12s]\x1b[0m |\n\r";
 
 #else
 /* Must define 1 byte although not used in release mode
@@ -301,25 +304,8 @@ uint8_t start_peripheral_and_app(void)
 		}
 	}
 
-	/** Voltage checking*/
-	DEBUG_Printf((uint8_t *)param_item_start, 3, "Checking VDD");
-	if(LVDVDDF == 1U)
-	{
-		DEBUG_Printf((uint8_t *)param_item_end_abnormal, "FAILED - VDD LOW!");
-		return 1U;
-	}
-	else if(VBATCMPM == 1U)
-	{
-		DEBUG_Printf((uint8_t *)param_item_end_abnormal, "FAILED - VDD < VBATDET1");
-		return 1U;
-	}
-	else
-	{
-		DEBUG_Printf((uint8_t *)param_item_end_normal, "OK");
-	}
-
 	/** Initialise Config Storage*/
-	DEBUG_Printf((uint8_t *)param_item_start, 4, "Retrieve Meter Config (calibration)");
+	DEBUG_Printf((uint8_t *)param_item_start, 3, "Retrieve Meter Config (calibration)");
 	g_em_startup_diag.config_load_status = config_data_load(&calib, &em_hold_setting_value);
 	if(EM_OK != g_em_startup_diag.config_load_status)
 	{
@@ -334,7 +320,7 @@ uint8_t start_peripheral_and_app(void)
 	}
 
 	/** Initialise EM Library*/
-	DEBUG_Printf((uint8_t *)param_item_start, 5, "Initialise EM Core");
+	DEBUG_Printf((uint8_t *)param_item_start, 4, "Initialise EM Core");
 	R_DSADC_SetGain(em_hold_setting_value.regs); /* Init load data from storage for ADC driver */
 	g_em_startup_diag.em_init_status = EM_Init((EM_PLATFORM_PROPERTY FAR_PTR *)&g_EM_DefaultProperty, &calib);
 	if(EM_OK != g_em_startup_diag.em_init_status)
@@ -350,7 +336,7 @@ uint8_t start_peripheral_and_app(void)
 	}
 
 	/** Initialise Meter Storage*/
-	DEBUG_Printf((uint8_t *)param_item_start, 6, "Retrieve & Restore Meter Storage (energy)");
+	DEBUG_Printf((uint8_t *)param_item_start, 5, "Retrieve & Restore Meter Storage (energy)");
 	g_em_startup_diag.energy_load_status = STORAGE_EM_Restore();
 	if(EM_STORAGE_HEADER_INVALID == g_em_startup_diag.energy_load_status)
 	{
@@ -368,7 +354,7 @@ uint8_t start_peripheral_and_app(void)
 
 
 	/** Start the EM Library*/
-	DEBUG_Printf((uint8_t *)param_item_start, 7, "Start EM Core");
+	DEBUG_Printf((uint8_t *)param_item_start, 6, "Start EM Core");
 	g_em_startup_diag.em_start_status = EM_Start();
 	if (EM_OK != g_em_startup_diag.em_start_status)
 	{
@@ -380,6 +366,22 @@ uint8_t start_peripheral_and_app(void)
 	else
 	{
 		DEBUG_Printf((uint8_t *)param_item_end_normal, "OK");
+	}
+
+	/** Check VDD*/
+	DEBUG_Printf((uint8_t *)param_item_start, 7, "Checking VDD");
+	vdd_range = R_LVD_Check();
+	if(vdd_less_than_2_46 == vdd_range || vdd_2_46_to_2_67 == vdd_range)
+	{
+		DEBUG_Printf((uint8_t *)param_item_end_warning, "WARNING");
+		sprintf(code_buffer, " . VDD LOW: %s", R_LVD_range_to_str(vdd_range));
+		DEBUG_Printf((uint8_t *)param_text, code_buffer);
+	}
+	else
+	{
+		DEBUG_Printf((uint8_t *)param_item_end_normal, "OK");
+		sprintf(code_buffer, " . VDD OK: %s", R_LVD_range_to_str(vdd_range));
+		DEBUG_Printf((uint8_t *)param_text, code_buffer);
 	}
 
 	/** Start peripherals */
