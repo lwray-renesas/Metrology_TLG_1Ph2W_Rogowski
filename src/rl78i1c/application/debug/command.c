@@ -34,6 +34,7 @@ Includes   <System Includes> , "Project Includes"
 #include "r_cg_rtc.h"           /* RTC Driver */
 #include "r_cg_dsadc.h"         /* DSAD Driver */
 #include "r_cg_wdt.h"           /* WDT Driver */
+#include "r_cg_lvd.h"
 
 /* Wrapper */
 #include "wrp_em_sw_config.h"   /* EM Software Config */
@@ -155,11 +156,11 @@ static uint8_t COMMAND_InvokeFormatMemory(uint8_t *arg_str);                    
 static uint8_t COMMAND_InvokeReadDTFLHeader(uint8_t *arg_str);                  /* Read DTFL header */
 static uint8_t COMMAND_InvokeEraseDTFL(uint8_t *arg_str);                       /* Erase DTFL content */
 static uint8_t COMMAND_InvokeDumpSample(uint8_t *arg_str);                      /* Dump waveform samples */
-static uint8_t COMMAND_InvokeCdumpSample(uint8_t *arg_str);                     /* Dump current only waveform samples */
 static uint8_t COMMAND_InvokeCalibration(uint8_t *arg_str);                     /* Calibration */
 static uint8_t COMMAND_InvokeGetCalibration(uint8_t *arg_str);                  /* Get Calibration Info */
 static uint8_t COMMAND_InvokeSetConfig(uint8_t *arg_str);                       /* Set configuration */
 static uint8_t COMMAND_InvokeCPULoad(uint8_t *arg_str);                         /* Measure CPU Load */
+static uint8_t COMMAND_InvokeVddCheck(uint8_t *arg_str);                        /* Measure VDD Range using LVD */
 
 /* Command Table */
 static const COMMAND_ITEM   cmd_table[] = 
@@ -186,11 +187,11 @@ static const COMMAND_ITEM   cmd_table[] =
 		{(const uint8_t *)"erasedtfl"       ,   (const uint8_t *)""                                         ,   (const uint8_t *)"Erase content of dataflash"                                   ,   COMMAND_InvokeEraseDTFL                 },
 		{(const uint8_t *)"formatmem"       ,   (const uint8_t *)"type(0:EEP,1:DTFL)"                       ,   (const uint8_t *)"Format memory type (followed format.h)"                       ,   COMMAND_InvokeFormatMemory              },
 		{(const uint8_t *)"dump"            ,   (const uint8_t *)"current"                                  ,   (const uint8_t *)"Dump waveform from EM Core"                                   ,   COMMAND_InvokeDumpSample          		},
-		{(const uint8_t *)"cdump"       	,   (const uint8_t *)"current"                                  ,   (const uint8_t *)"Dump current only waveform from EM Core"                      ,   COMMAND_InvokeCdumpSample               },
 		{(const uint8_t *)"calib"           ,   (const uint8_t *)"c cp imax v i w "                         ,   (const uint8_t *)"Calibrate (cycle,cycle_phase,imax,V,I,wire)"                  ,   COMMAND_InvokeCalibration               },
 		{(const uint8_t *)"getcalib"        ,   (const uint8_t *)""                         				,   (const uint8_t *)"Prints Calibration Coefficients"                  			,   COMMAND_InvokeGetCalibration               },
 		{(const uint8_t *)"setconfig"       ,   (const uint8_t *)"get:leave empty; set:1 later follow guide",   (const uint8_t *)"Manually set configuration"                                   ,   COMMAND_InvokeSetConfig                 },
 		{(const uint8_t *)"cpuload"         ,   (const uint8_t *)""                                         ,   (const uint8_t *)"Measure the CPU Load"                                         ,   COMMAND_InvokeCPULoad                   },
+		{(const uint8_t *)"vddcheck"        ,   (const uint8_t *)""                                         ,   (const uint8_t *)"Return VDD Range, According to LVD"                           ,   COMMAND_InvokeVddCheck                   },
 };
 
 static const uint8_t * g_mem_epr = (const uint8_t *)"EEPROM";
@@ -2238,68 +2239,6 @@ static uint8_t COMMAND_InvokeDumpSample(uint8_t *arg_str)
 }
 
 /******************************************************************************
- * Function Name    : static uint8_t COMMAND_InvokeCdumpSample(uint8_t *arg_str)
- * Description      : Command Invoke Dump ADC samples (current only)
- * Arguments        : uint8_t index: Command index
- *                  : uint8_t *arg_str: Arguments string
- * Functions Called : None
- * Return Value     : uint8_t, execution code, 0 is success
- ******************************************************************************/
-static uint8_t COMMAND_InvokeCdumpSample(uint8_t *arg_str)
-{
-	uint16_t i;
-	uint8_t buffer[20];
-
-	CMD_SendString((uint8_t *)"\n\rParameter(s): ");
-	CMD_SendString((uint8_t *)arg_str);
-	CMD_SendString((uint8_t *)"\n\r");
-
-	/* Get Day parameter */
-	arg_str = COMMAND_GetScanOneParam(buffer, 20, arg_str, (uint8_t *)" ", (uint8_t *)" /");
-
-	if (arg_str != NULL &&
-			(buffer[0] >= '0' && buffer[0] <= '9'))
-	{
-		/* get number */
-		g_sample1_direction = (uint8_t)atoi((char * __near)buffer);
-
-		if (g_sample1_direction != 0 &&
-				g_sample1_direction != 1)
-		{
-			CMD_SendString((uint8_t *)"Parameter error\n\r");
-			return 1;
-		}
-	}
-	else
-	{
-		CMD_SendString((uint8_t *)"Parameter error\n\r");
-		return 1;
-	}
-
-	/* Send request to EM Core to dump the waveform */
-	g_sample_count = 0;
-	while(g_sample_count != g_sample_max_count)
-	{
-		NOP();
-	}
-
-	/* Print out */
-	CMD_Printf(
-			(uint8_t *)"Waveform of current %i, %i samples\n\r",
-			g_sample1_direction + 1,
-			g_sample_max_count
-	);
-	for (i = 0; i < (g_sample_count-1U); i++)
-	{
-		CMD_Printf((uint8_t *)"%ld,\n\r", g_sample1[i]);
-	}
-
-	CMD_Printf((uint8_t *)"%ld", g_sample1[i]);
-
-	return 0;
-}
-
-/******************************************************************************
  * Function Name   : COMMAND_InvokeCalibration
  * Interface       : static void COMMAND_InvokeCalibration(uint8_t *arg_str)
  * Description     : Command Invoke Calibration
@@ -2586,6 +2525,23 @@ static uint8_t COMMAND_InvokeCPULoad(uint8_t *arg_str)
 	CMD_Printf((uint8_t *)"\n\r No support. please turn on the macro METER_ENABLE_MEASURE_CPU_LOAD! \n\r ");
 #endif
 
+
+	return 0;
+}
+
+/******************************************************************************
+ * Function Name   : COMMAND_InvokeVddCheck
+ * Interface       : static void COMMAND_InvokeVddCheck(uint8_t *arg_str)
+ * Description     : Command Invoke VDD check on LVD
+ * Arguments       : uint8_t * arg_str: Arguments string
+ * Function Calls  : None
+ * Return Value    : None
+ ******************************************************************************/
+static uint8_t COMMAND_InvokeVddCheck(uint8_t *arg_str)
+{
+	CMD_Printf((uint8_t*)"\n\rVDD Status: ");
+	CMD_Printf((uint8_t*)R_LVD_range_to_str(R_LVD_Check()));
+	CMD_SendString((uint8_t *)"\n\r");
 
 	return 0;
 }
