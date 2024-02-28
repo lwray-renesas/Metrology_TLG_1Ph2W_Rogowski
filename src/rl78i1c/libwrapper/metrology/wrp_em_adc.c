@@ -151,6 +151,12 @@ Private global variables and functions
 		static uint8_t  g_EM_ADC_GainPhaseCurrentLevel;     /* The current level of phase gain */
 		static uint8_t  g_EM_ADC_GainNeutralCurrentLevel;   /* The current level of neutral gain */
 
+		/* phase inversion flag*/
+		EM_SW_SAMP_TYPE phase_inversion_flag = 1;
+
+		/* neutral inversion flag*/
+		EM_SW_SAMP_TYPE neutral_inversion_flag = 1;
+
 		/* Static I/F for this module */
 		/* Changing gain, apply gain value to the port pin */
 		static void EM_ADC_GainPhaseSet(void);              /* Set a suitable gain phase level to a port */
@@ -394,7 +400,9 @@ Private global variables and functions
 			/* Read all dsad result to buffer */
 			EM_ADC_DRIVER_READ_ALL();
 
-		    g_wrp_adc_samples.i1 = g_wrp_adc_samples.i1 * (-1); /* Change direction*/
+		    g_wrp_adc_samples.v = g_wrp_adc_samples.v * (-1); /* Phase shift by 180 degrees the Neutral channel voltage - not needed for live sampling*/
+		    g_wrp_adc_samples.i1 = g_wrp_adc_samples.i1 * phase_inversion_flag;
+		    g_wrp_adc_samples.i2 = g_wrp_adc_samples.i2 * neutral_inversion_flag;
 
 			EM_ADC_DoNoisyBitMasking();
 

@@ -205,7 +205,8 @@ uint8_t CALIBRATION_Invoke(uint16_t calib_c, uint16_t calib_cp, float32_t calib_
 						DEBUG_Printf((uint8_t *)"FAILED: Out of adjustment range, angle: %.4f\n\r", calib_output.angle_error);
 						if(1U == line)
 						{
-							DEBUG_Printf((uint8_t *)"FAILED: CT direction incorrect - reverse CT polarity!\n\r", calib_output.angle_error);
+							DEBUG_Printf((uint8_t *)"FAILED: CT direction incorrect.\n\r", calib_output.angle_error);
+							DEBUG_Printf((uint8_t *)"\x1b[38;2;255;165;0mTry reverse CT polarity or run command \"invertpolarity 1\"\x1b[0m\n\r", calib_output.angle_error);
 						}
 					}
 					else if (rlt == EM_ERROR_CALIBRATING_FAILED_OUT_ANGLE)
