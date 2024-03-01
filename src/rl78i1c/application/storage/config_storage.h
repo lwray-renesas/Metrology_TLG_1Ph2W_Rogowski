@@ -96,7 +96,7 @@ CFS_FUNC void CONFIG_PollingProcessing(void);                                   
  * if not, error will occurred */
 CFS_FUNC uint8_t CONFIG_Backup(uint8_t selection);                               /* Storage Backup */
 CFS_FUNC uint8_t CONFIG_Restore(uint8_t selection);                              /* Storage Restore */
-CFS_FUNC uint8_t CONFIG_LoadEMCalib(EM_CALIBRATION * p_calib, dsad_reg_setting_t * p_regs);               /* Load meter calibration configuration from storage */
+CFS_FUNC uint8_t CONFIG_LoadEMCalib(EM_CALIBRATION * p_calib, dsad_reg_setting_t * p_regs, EM_SW_SAMP_TYPE * p_polarities);               /* Load meter calibration configuration from storage */
 /* Control the CRC checking:
  * Note: only avaliable in Single phase metrology
  * Reason: calibration in Single phase meter only set calib

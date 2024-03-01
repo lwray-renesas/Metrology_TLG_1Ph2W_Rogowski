@@ -122,6 +122,7 @@ Macro definitions
 #define CONFIG_STORAGE_CALIB_NO_ARRAY_SIZE              (sizeof(EM_CALIBRATION) - (sizeof(((EM_CALIBRATION *)0)->sw_gain) + sizeof(((EM_CALIBRATION *)0)->sw_phase_correction)) )                                           /* Size of EM_CALIBRATION without pointer */
 #define CONFIG_STORAGE_CALIB_SIZE                       (CONFIG_STORAGE_CALIB_NO_ARRAY_SIZE                         +\
                                                          (sizeof(float32_t) * 4 * EM_GAIN_PHASE_NUM_LEVEL_MAX)      +\
+														 (sizeof(EM_SW_SAMP_TYPE) * INVERSION_COUNT)				+\
                                                          (2)                                                        \
                                                         )                                                                       /* Size of whole calibration page */
 #define CONFIG_STORAGE_CALIB_TYPE                       CONFIG_STORAGE_TYPE_STRUCT                                              /* Structure */
@@ -215,6 +216,10 @@ Macro definitions
     #define CONFIG_STORAGE_CALIB_DRIVER_ADC_GAIN1_SIZE                      (sizeof(uint8_t))
     #define CONFIG_STORAGE_CALIB_DRIVER_ADC_GAIN1_TYPE                      CONFIG_STORAGE_TYPE_INTEGER8
 
+	/* Polarity inversion status's */
+	#define CONFIG_STORAGE_CALIB_POLARITY_ADDR                      		(CONFIG_STORAGE_CALIB_DRIVER_ADC_GAIN1_ADDR             + CONFIG_STORAGE_CALIB_DRIVER_ADC_GAIN1_SIZE)
+	#define CONFIG_STORAGE_CALIB_POLARITY_SIZE                      		(sizeof(EM_SW_SAMP_TYPE) * INVERSION_COUNT)
+	#define CONFIG_STORAGE_CALIB_POLARITY_TYPE                      		CONFIG_STORAGE_TYPE_INTEGER32
     
 #endif /* CONFIG_STORAGE_CALIB_GROUP */
 

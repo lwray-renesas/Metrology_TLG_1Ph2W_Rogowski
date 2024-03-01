@@ -244,8 +244,7 @@
           <Option>-character_set=utf8</Option>
           <Option>-g</Option>
           <Option>-o ${workspace_loc}\${ProjName}/${ConfigName}</Option>
-          <Option>-Ospeed</Option>
-          <Option>-Oinline_size</Option>
+          <Option>-Osize</Option>
           <Option>-merge_string</Option>
           <Option>-signed_char</Option>
           <Option>-lang=c</Option>

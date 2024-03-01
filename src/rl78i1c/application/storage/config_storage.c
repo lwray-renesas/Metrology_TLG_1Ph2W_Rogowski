@@ -64,7 +64,7 @@ typedef struct tagConfigStorageCrcData
     EM_CALIBRATION  * p_calibration;
     uint8_t         * p_driver_adc_gain0_list;
     uint8_t         * p_driver_adc_gain1_list;
-    
+    EM_SW_SAMP_TYPE	* p_polarities;
 } config_crc_data;
 /***********************************************************************************************************************
 Macro definitions
@@ -186,6 +186,7 @@ CFS_FUNC uint16_t CONFIG_CalculateCRC16(config_crc_data * p_crc_data)
         if ( (p_crc_data->p_calibration != NULL) &&
             (p_crc_data->p_driver_adc_gain0_list != NULL) &&
             (p_crc_data->p_driver_adc_gain1_list != NULL) &&
+			(p_crc_data->p_polarities != NULL) &&
             (1)
         )
         {
@@ -231,6 +232,12 @@ CFS_FUNC uint16_t CONFIG_CalculateCRC16(config_crc_data * p_crc_data)
                 CONFIG_STORAGE_CALIB_DRIVER_ADC_GAIN1_SIZE
             );
             
+            /* POLARITIES*/
+            R_CRC_Calculate(
+                (uint8_t *)p_crc_data->p_polarities,
+				CONFIG_STORAGE_CALIB_POLARITY_SIZE
+            );
+
             crc_value = R_CRC_GetResult();
         }
     }
@@ -309,13 +316,14 @@ CFS_FUNC uint8_t CONFIG_Init(uint8_t is_checking)
 *                  : (of [selection] parameter) have been stored to Storage
 * Arguments        : EM_CALIBRATION calib - pointer for calibration
 *                    dsad_reg_setting_t regs - value of adc register to back up to storage
+*                    EM_SW_SAMP_TYPE * p_polarities - pointer to polarities
 * Return Value     : Execution Status
 *                  :    CONFIG_OK      Backup successfull
 *                  :    CONFIG_ERROR   Storage device is not initialized or not formatted
 *                  :                    Or, error occurred when write Storage
 *                  :                    Or, selection = 0 (CONFIG_ITEM_NONE)
 ***********************************************************************************************************************/
-CFS_FUNC static uint8_t CONFIG_BackupCalib(EM_CALIBRATION calib, dsad_reg_setting_t regs)
+CFS_FUNC static uint8_t CONFIG_BackupCalib(EM_CALIBRATION calib, dsad_reg_setting_t regs, EM_SW_SAMP_TYPE * p_polarities)
 {
     uint8_t i;
     uint8_t driver_adc_gain0;
@@ -417,6 +425,14 @@ CFS_FUNC static uint8_t CONFIG_BackupCalib(EM_CALIBRATION calib, dsad_reg_settin
     {
         return CONFIG_ERROR; /* Write error */
     }
+
+    /* Polarities */
+    if (DATAFLASH_Write(CONFIG_STORAGE_CALIB_POLARITY_ADDR,
+                        (uint8_t *)p_polarities,
+						CONFIG_STORAGE_CALIB_POLARITY_SIZE) != DATAFLASH_OK)
+    {
+        return CONFIG_ERROR; /* Write error */
+    }
     R_WDT_Restart();
 
     /* Success */
@@ -503,7 +519,7 @@ CFS_FUNC uint8_t CONFIG_Format(void)
 #endif
 
     /* Calibration default */
-    if (CONFIG_BackupCalib(g_EM_DefaultCalibration, regs) != CONFIG_OK)
+    if (CONFIG_BackupCalib(g_EM_DefaultCalibration, regs, inversion_flags) != CONFIG_OK)
     {
         return CONFIG_ERROR; /* Storage Header error (not formatted) */
     }
@@ -564,7 +580,7 @@ CFS_FUNC uint8_t CONFIG_Backup(uint8_t selection)
         /* Get EM Core calib */
         calib = EM_GetCalibInfo();
 
-        if (CONFIG_BackupCalib(calib, regs) != CONFIG_OK)
+        if (CONFIG_BackupCalib(calib, regs, inversion_flags) != CONFIG_OK)
         {
             return CONFIG_ERROR; /* Storage Header error (not formatted) */
         }
@@ -640,7 +656,7 @@ CFS_FUNC uint8_t CONFIG_Restore(uint8_t selection)
         calib.sw_gain.i1_gain_values = em_hold_setting_value.gain_list_i1;
         calib.sw_gain.i2_gain_values = em_hold_setting_value.gain_list_i2;
         /* Get calibration from storage */
-        if (CONFIG_LoadEMCalib(&calib, &em_hold_setting_value.regs) != EM_OK)
+        if (CONFIG_LoadEMCalib(&calib, &em_hold_setting_value.regs, inversion_flags) != EM_OK)
         {
             return CONFIG_ERROR;
         }
@@ -668,6 +684,7 @@ CFS_FUNC uint8_t CONFIG_Restore(uint8_t selection)
 * Description      : load data for calibration configuration from storage
 * Arguments        : EM_CALIBRATION * p_calib - pointer of calibration to get data from storage
 *                    dsad_reg_setting_t * p_regs - pointer to get value of adc gain from storage
+*                    EM_SW_SAMP_TYPE * p_polarities - pointer to get value of current channel polarities
 * Return Value     : Execution Status
 *                  :    CONFIG_OK                  Restore successfull
 *                  :    CONFIG_ERROR_DATA_CORRUPT  Related data on Storage of selected item is corrupt
@@ -675,7 +692,7 @@ CFS_FUNC uint8_t CONFIG_Restore(uint8_t selection)
 *                  :                                Or, error occurred when read Storage,
 *                  :                                Or, selection = 0 (CONFIG_ITEM_NONE)
 ***********************************************************************************************************************/
-CFS_FUNC uint8_t CONFIG_LoadEMCalib(EM_CALIBRATION *p_calib, dsad_reg_setting_t * p_regs)
+CFS_FUNC uint8_t CONFIG_LoadEMCalib(EM_CALIBRATION *p_calib, dsad_reg_setting_t * p_regs, EM_SW_SAMP_TYPE * p_polarities)
 {
     uint8_t i;
 
@@ -754,6 +771,14 @@ CFS_FUNC uint8_t CONFIG_LoadEMCalib(EM_CALIBRATION *p_calib, dsad_reg_setting_t 
     if (DATAFLASH_Read(CONFIG_STORAGE_CALIB_DRIVER_ADC_GAIN1_ADDR,
                        (uint8_t *)&p_regs->gain1,
                        CONFIG_STORAGE_CALIB_DRIVER_ADC_GAIN1_SIZE) != DATAFLASH_OK)
+    {
+        return CONFIG_ERROR; /* Read error */
+    }
+
+    /* Polarities */
+    if (DATAFLASH_Read(CONFIG_STORAGE_CALIB_POLARITY_ADDR,
+                       (uint8_t *)p_polarities,
+					   CONFIG_STORAGE_CALIB_POLARITY_SIZE) != DATAFLASH_OK)
     {
         return CONFIG_ERROR; /* Read error */
     }

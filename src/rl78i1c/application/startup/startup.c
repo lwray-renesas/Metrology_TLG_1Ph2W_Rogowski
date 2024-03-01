@@ -180,7 +180,7 @@ static uint8_t config_data_load( EM_CALIBRATION * p_calib, st_em_setting_t * p_e
 		}
 	}
 	/* Restore data from storage in every load config */
-	if (CONFIG_LoadEMCalib(p_calib, &p_em_setting->regs) != CONFIG_OK)
+	if (CONFIG_LoadEMCalib(p_calib, &p_em_setting->regs, inversion_flags) != CONFIG_OK)
 	{
 		NOP();
 	}

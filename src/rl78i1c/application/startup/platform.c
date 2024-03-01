@@ -121,6 +121,7 @@ const EM_CALIBRATION FAR_PTR g_EM_DefaultCalibration =
     }
 };
 
+EM_SW_SAMP_TYPE inversion_flags[INVERSION_COUNT] = {-1, 1, 1};
 
 /******************************************************************************
 Private global variables and functions
